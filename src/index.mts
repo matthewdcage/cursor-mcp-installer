@@ -429,7 +429,7 @@ async function installRepoMcpServer(
           .replace(/-/g, ' ')
           .replace(/\b\w/g, l => l.toUpperCase());
         
-        // Install to both platforms, properly handling the index file
+        // Install to Cursor, properly handling the index file
         const mainFilePath = path.join(tempDir, indexFile);
         
         installToCursor(friendlyName, 'node', [mainFilePath, ...(args || [])], env);
@@ -458,7 +458,7 @@ async function installRepoMcpServer(
   }
 
   if (await isNpmPackage(name)) {
-    // Install to both platforms
+    // Install to Cursor
     installRepoWithArgsToCursor(name, true, args, env);
 
     return {
