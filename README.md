@@ -2,7 +2,7 @@
 
 <div align="center">
 
-```text
+<pre style="text-align: center;">
    ___         __  __    ___  __            ___   ___ 
   / __\/\ /\  /__\/ _\  /___\/__\  /\/\    / __\ / _ \
  / /  / / \ \/ \//\ \  //  // \// /    \  / /   / /_)/
@@ -19,7 +19,7 @@
 | 🚀 CURSOR MCP INSTALLER 🚀                 |
 | ✨ Magically install MCP servers with ease ✨ |
 +---------------------------------------------+
-```
+</pre>
 
   <p>A Model Context Protocol (MCP) server for installing and configuring other MCP servers within Cursor IDE.</p>
   
