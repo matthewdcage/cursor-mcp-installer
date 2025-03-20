@@ -27,11 +27,14 @@
   [![npm version](https://img.shields.io/npm/v/cursor-mcp-installer.svg)](https://www.npmjs.com/package/cursor-mcp-installer)
   [![MCP Compatible](https://img.shields.io/badge/MCP-Compatible-brightgreen.svg)](https://github.com/anthropic-labs/model-context-protocol)
   [![Cursor IDE](https://img.shields.io/badge/Cursor-IDE-blue.svg)](https://cursor.sh)
+  [![npm downloads](https://img.shields.io/npm/dt/cursor-mcp-installer.svg)](https://www.npmjs.com/package/cursor-mcp-installer)
   
   <a href="https://www.linkedin.com/in/digitalmarketingstrategyexpert/">
     <img src="https://img.shields.io/badge/LinkedIn-Matthew_Cage-blue?style=flat&logo=linkedin" alt="LinkedIn"/>
   </a>
 </div>
+
+> **📢 NOW AVAILABLE ON NPM!** Install with a simple `npm install -g cursor-mcp-installer` command.
 
 ## Features
 

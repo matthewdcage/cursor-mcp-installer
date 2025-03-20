@@ -2,7 +2,7 @@
   "name": "cursor-mcp-installer",
   "version": "0.1.0",
   "bin": {
-    "cursor-mcp-installer": "./lib/index.mjs"
+    "cursor-mcp-installer": "lib/index.mjs"
   },
   "description": "A MCP server to install other MCP servers in Cursor",
   "main": "lib/index.mjs",
@@ -33,7 +33,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/matthewdcage/cursor-mcp-installer"
+    "url": "git+https://github.com/matthewdcage/cursor-mcp-installer.git"
   },
   "bugs": {
     "url": "https://github.com/matthewdcage/cursor-mcp-installer/issues"
@@ -48,4 +48,4 @@
   "files": [
     "lib/**/*"
   ]
-} 
+}
