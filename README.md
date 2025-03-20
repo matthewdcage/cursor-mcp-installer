@@ -50,15 +50,78 @@ Before using this tool, you need to have installed:
 
 ## Installation
 
-### Using npm
+There are several ways to install and use the Cursor MCP Installer:
+
+### 1. Using npm (Recommended)
 
 ```bash
 npm install -g cursor-mcp-installer
 ```
 
-### Manual Setup
+After installation, add it to your Cursor MCP configuration file:
 
-Add this to your Cursor MCP configuration file (located at `~/.cursor/mcp.json`):
+```json
+{
+  "mcpServers": {
+    "MCP Installer": {
+      "command": "cursor-mcp-installer",
+      "type": "stdio"
+    }
+  }
+}
+```
+
+### 2. Using npx (No Installation Required)
+
+You can use npx to run the package without installing it globally:
+
+```json
+{
+  "mcpServers": {
+    "MCP Installer": {
+      "command": "npx",
+      "type": "stdio",
+      "args": [
+        "cursor-mcp-installer"
+      ]
+    }
+  }
+}
+```
+
+### 3. Using uv/uvx (Python Package Manager)
+
+If you prefer using Python's uv package manager:
+
+```json
+{
+  "mcpServers": {
+    "MCP Installer": {
+      "command": "uvx",
+      "type": "stdio",
+      "args": [
+        "cursor-mcp-installer"
+      ]
+    }
+  }
+}
+```
+
+### 4. Direct from GitHub
+
+Clone the repository and build it locally:
+
+```bash
+# Clone the repository
+git clone https://github.com/matthewdcage/cursor-mcp-installer.git
+cd cursor-mcp-installer
+
+# Install dependencies and build
+npm install
+npm run build
+```
+
+Then configure Cursor to use your local installation:
 
 ```json
 {
@@ -74,7 +137,16 @@ Add this to your Cursor MCP configuration file (located at `~/.cursor/mcp.json`)
 }
 ```
 
-Replace `/path/to/cursor-mcp-installer` with the actual path where you've cloned or installed the repository.
+Replace `/path/to/cursor-mcp-installer` with the actual path where you've cloned the repository.
+
+### Where is the Cursor MCP Configuration File?
+
+The Cursor MCP configuration file is located at:
+
+- **macOS/Linux**: `~/.cursor/mcp.json`
+- **Windows**: `%USERPROFILE%\.cursor\mcp.json`
+
+If the file doesn't exist, you can create it with the content from any of the installation methods above.
 
 ## Usage
 
@@ -194,6 +266,22 @@ Error: Path /path/to/server does not exist locally!
 ```
 
 Solution: Check that the path to your local MCP server is correct
+
+#### Package not found in npm registry
+
+```
+Error: Package not found in npm registry
+```
+
+Solution: Check that the package name is correct and exists in the npm registry. You can also try installing directly from a Git repository using `https://github.com/username/repo.git` as the package name.
+
+#### Permission issues when writing to mcp.json
+
+```
+Error: EACCES: permission denied, open '~/.cursor/mcp.json'
+```
+
+Solution: Make sure you have write permissions to the Cursor configuration directory.
 
 ## Contributing
 
