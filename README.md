@@ -64,15 +64,17 @@ Add this to your Cursor MCP configuration file (located at `~/.cursor/mcp.json`)
 {
   "mcpServers": {
     "MCP Installer": {
-      "command": "npx",
+      "command": "node",
       "type": "stdio",
       "args": [
-        "cursor-mcp-installer"
+        "/path/to/cursor-mcp-installer/lib/index.mjs"
       ]
     }
   }
 }
 ```
+
+Replace `/path/to/cursor-mcp-installer` with the actual path where you've cloned or installed the repository.
 
 ## Usage
 
