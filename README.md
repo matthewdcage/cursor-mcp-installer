@@ -136,6 +136,22 @@ Example:
 Install the mcp-openapi-schema MCP server and use my-api-spec.yaml as the schema file
 ```
 
+#### Python MCP Servers
+
+For Python-based MCP servers like X-MCP, the installer will:
+
+1. Detect Python-based repositories and packages
+2. Configure them to run as Python modules using `python3 -m module_name.server`
+3. Set up the proper environment variables for configuration
+
+Example:
+
+```
+Install the MCP server from https://github.com/vidhupv/x-mcp.git
+```
+
+The X-MCP Twitter server will require proper Twitter API credentials to be added to the configuration after installation.
+
 #### Git Repositories
 
 For MCP servers hosted in Git repositories:
