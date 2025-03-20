@@ -215,6 +215,38 @@ function installRepoWithArgsToCursor(
       }
     }
   }
+  
+  // Check if this is a Python package
+  if (!npmIfTrueElseUvx || name.includes('x-mcp') || name.includes('python') || name.endsWith('.py')) {
+    // For Python MCP servers, we should use python -m module_name pattern instead of uvx
+    // This helps ensure proper module paths and environment
+    
+    const moduleName = name.replace(/-/g, '_').replace(/\.git$/, '');
+    // Extract module name from common patterns like username/repo-name.git
+    const cleanModuleName = moduleName.includes('/') ? 
+      moduleName.split('/').pop()!.replace(/\.git$/, '') : 
+      moduleName;
+    
+    // For X Twitter MCP specifically
+    if (name.includes('x-mcp')) {
+      installToCursor(
+        'X Twitter Tools',
+        'python3',
+        ['-m', `${cleanModuleName.replace(/-/g, '_')}.server`],
+        env
+      );
+      return;
+    }
+    
+    // For other Python-based MCP servers
+    installToCursor(
+      formattedName,
+      'python3',
+      ['-m', cleanModuleName],
+      env
+    );
+    return;
+  }
 
   // Default case - use npx/uvx
   installToCursor(
