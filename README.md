@@ -1,6 +1,31 @@
 # Cursor MCP Installer
 
-A Model Context Protocol (MCP) server for installing and configuring other MCP servers within Cursor IDE. This tool allows you to easily set up various MCP servers to enhance your Cursor experience.
+<div align="center">
+  <pre>
+  ______                           __  __ _____ _____    _____           _        _ _           
+ / _____)                         |  \/  |  __ \_   _|  |_   _|         | |      | | |          
+| /       _   _  ____ ___ _   _  | \  / | |__) || |      | |  _ __  ___| |_ __ _| | | ___ _ __ 
+| |      | | | |/ ___) _ \ | | | | |\/| |  ___/ | |      | | | '_ \/ __| __/ _` | | |/ _ \ '__|
+| \_____ | |_| | |  | |_| | |_| | | |  | | |    _| |_    _| |_| | | \__ \ || (_| | | |  __/ |   
+ \______)|____/|_|   \___/\__  | |_|  |_|_|   |_____|  |_____|_| |_|___/\__\__,_|_|_|\___|_|   
+                         (____/                                                                 
+
+ +-----------------------------------------+
+ | Cursor MCP Installer                   |
+ | Seamlessly install MCP servers         |
+ +-----------------------------------------+
+  </pre>
+  <p>A Model Context Protocol (MCP) server for installing and configuring other MCP servers within Cursor IDE.</p>
+  
+  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+  [![npm version](https://img.shields.io/npm/v/cursor-mcp-installer.svg)](https://www.npmjs.com/package/cursor-mcp-installer)
+  [![MCP Compatible](https://img.shields.io/badge/MCP-Compatible-brightgreen.svg)](https://github.com/anthropic-labs/model-context-protocol)
+  [![Cursor IDE](https://img.shields.io/badge/Cursor-IDE-blue.svg)](https://cursor.sh)
+  
+  <a href="https://www.linkedin.com/in/digitalmarketingstrategyexpert/">
+    <img src="https://img.shields.io/badge/LinkedIn-Matthew_Cage-blue?style=flat&logo=linkedin" alt="LinkedIn"/>
+  </a>
+</div>
 
 ## Features
 
