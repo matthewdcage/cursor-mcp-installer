@@ -188,6 +188,35 @@ function installRepoWithArgsToCursor(
     .replace(/-/g, ' ')
     .replace(/\b\w/g, l => l.toUpperCase());
 
+  // Check if we're using a package that requires special handling
+  if (name === 'mcp-openapi-schema' || name.includes('openapi-schema')) {
+    // For OpenAPI schema servers, we need to pass the schema file as an argument to index.mjs
+    const hasSchemaFile = args && args.length > 0 && 
+      (args[0].endsWith('.yaml') || args[0].endsWith('.json') || args[0].endsWith('.yml'));
+    
+    if (hasSchemaFile) {
+      // Special configuration for OpenAPI schema servers
+      // First try to get the installed package path
+      try {
+        const packagePath = path.dirname(require.resolve(`${name}/package.json`));
+        const indexPath = path.join(packagePath, 'index.mjs');
+        
+        if (fs.existsSync(indexPath)) {
+          installToCursor(
+            formattedName,
+            'node',
+            [indexPath, ...(args ?? [])],
+            env
+          );
+          return;
+        }
+      } catch (error) {
+        console.warn(`Couldn't resolve ${name} package path, falling back to npx`);
+      }
+    }
+  }
+
+  // Default case - use npx/uvx
   installToCursor(
     formattedName,
     npmIfTrueElseUvx ? "npx" : "uvx",
@@ -338,8 +367,66 @@ async function installRepoMcpServer(
     };
   }
 
+  // Check if this is a git repository URL
+  const isGitRepo = name.endsWith('.git') || name.includes('github.com') || name.includes('gitlab.com');
+  
+  if (isGitRepo) {
+    // For Git repos, we need to clone and examine the structure
+    const repoName = name.split('/').pop()?.replace('.git', '') || 'mcp-repo';
+    const tempDir = path.join(os.tmpdir(), `mcp-${repoName}-${Date.now()}`);
+    
+    try {
+      fs.mkdirSync(tempDir, { recursive: true });
+      await spawnPromise('git', ['clone', name, tempDir]);
+      
+      // Check if the repo has an index.mjs/index.js file at the root
+      const hasIndexMjs = fs.existsSync(path.join(tempDir, 'index.mjs'));
+      const hasIndexJs = fs.existsSync(path.join(tempDir, 'index.js'));
+      
+      if (hasIndexMjs || hasIndexJs) {
+        const indexFile = hasIndexMjs ? 'index.mjs' : 'index.js';
+        
+        // Check if package.json exists before parsing
+        if (fs.existsSync(path.join(tempDir, 'package.json'))) {
+          // Install dependencies
+          await spawnPromise('npm', ['install'], { cwd: tempDir });
+        }
+        
+        // Create a friendly name from the repo name
+        const friendlyName = repoName
+          .replace(/-/g, ' ')
+          .replace(/\b\w/g, l => l.toUpperCase());
+        
+        // Install to both platforms, properly handling the index file
+        const mainFilePath = path.join(tempDir, indexFile);
+        
+        installToCursor(friendlyName, 'node', [mainFilePath, ...(args || [])], env);
+        
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Installed ${friendlyName} MCP server from Git repository to Cursor successfully! Please restart Cursor to apply the changes.`,
+            },
+          ],
+        };
+      }
+    } catch (error: any) {
+      console.error(`Error cloning repository: ${error.message || 'Unknown error'}`);
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Error installing from Git repository: ${error.message || 'Unknown error'}`,
+          },
+        ],
+        isError: true,
+      };
+    }
+  }
+
   if (await isNpmPackage(name)) {
-    // Install to Cursor
+    // Install to both platforms
     installRepoWithArgsToCursor(name, true, args, env);
 
     return {

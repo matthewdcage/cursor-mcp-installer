@@ -117,6 +117,39 @@ Here are some popular MCP servers you can install:
 - [@modelcontextprotocol/server-fetch](https://www.npmjs.com/package/@modelcontextprotocol/server-fetch) - Web access
 - [@modelcontextprotocol/server-filesystem](https://www.npmjs.com/package/@modelcontextprotocol/server-filesystem) - File system access
 - [@modelcontextprotocol/server-github](https://www.npmjs.com/package/@modelcontextprotocol/server-github) - GitHub access
+- [mcp-openapi-schema](https://github.com/hannesj/mcp-openapi-schema) - OpenAPI Schema Explorer
+
+### Special MCP Server Handling
+
+The installer has enhanced handling for certain types of MCP servers:
+
+#### OpenAPI Schema Servers
+
+For the `mcp-openapi-schema` server or repositories that provide OpenAPI schema tools, the installer will:
+
+1. Detect schema files passed as arguments (.yaml, .json, .yml)
+2. Configure Cursor to run the server correctly with the schema file 
+
+Example:
+
+```
+Install the mcp-openapi-schema MCP server and use my-api-spec.yaml as the schema file
+```
+
+#### Git Repositories
+
+For MCP servers hosted in Git repositories:
+
+1. The installer will clone the repository
+2. Install dependencies 
+3. Configure it to run with the appropriate entry point
+4. Pass any provided schema files or arguments correctly
+
+Example:
+
+```
+Install the MCP server from https://github.com/hannesj/mcp-openapi-schema.git and use my-petstore.yaml as the schema file
+```
 
 ## Troubleshooting
 
