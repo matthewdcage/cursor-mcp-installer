@@ -1,8 +1,8 @@
 {
-  "name": "cursor-mcp-installer",
-  "version": "0.1.0",
+  "name": "cursor-mcp-installer-free",
+  "version": "0.1.1",
   "bin": {
-    "cursor-mcp-installer": "lib/index.mjs"
+    "cursor-mcp-installer-free": "lib/index.mjs"
   },
   "description": "A MCP server to install other MCP servers in Cursor",
   "main": "lib/index.mjs",
@@ -11,7 +11,8 @@
     "prepare": "tsc && shx chmod +x ./lib/index.mjs",
     "build": "tsc",
     "test": "echo \"No tests specified\"",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "publish-public": "npm publish --access public"
   },
   "author": "Matthew Cage",
   "license": "MIT",
@@ -33,12 +34,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/matthewdcage/cursor-mcp-installer.git"
+    "url": "git+https://github.com/cursor-ai/mcp-installer.git"
   },
   "bugs": {
-    "url": "https://github.com/matthewdcage/cursor-mcp-installer/issues"
+    "url": "https://github.com/cursor-ai/mcp-installer/issues"
   },
-  "homepage": "https://github.com/matthewdcage/cursor-mcp-installer#readme",
+  "homepage": "https://github.com/cursor-ai/mcp-installer#readme",
   "engines": {
     "node": ">=16.0.0"
   },

@@ -13,8 +13,8 @@ import { spawnPromise } from "spawn-rx";
 
 const server = new Server(
   {
-    name: "cursor-mcp-installer",
-    version: "0.1.0",
+    name: "cursor-mcp-installer-free",
+    version: "0.1.1",
   },
   {
     capabilities: {

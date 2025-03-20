@@ -24,17 +24,94 @@
   <p>A Model Context Protocol (MCP) server for installing and configuring other MCP servers within Cursor IDE.</p>
   
   [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-  [![npm version](https://img.shields.io/npm/v/cursor-mcp-installer.svg)](https://www.npmjs.com/package/cursor-mcp-installer)
+  [![npm version](https://img.shields.io/npm/v/cursor-mcp-installer-free.svg)](https://www.npmjs.com/package/cursor-mcp-installer-free)
   [![MCP Compatible](https://img.shields.io/badge/MCP-Compatible-brightgreen.svg)](https://github.com/anthropic-labs/model-context-protocol)
   [![Cursor IDE](https://img.shields.io/badge/Cursor-IDE-blue.svg)](https://cursor.sh)
-  [![npm downloads](https://img.shields.io/npm/dt/cursor-mcp-installer.svg)](https://www.npmjs.com/package/cursor-mcp-installer)
+  [![npm downloads](https://img.shields.io/npm/dt/cursor-mcp-installer-free.svg)](https://www.npmjs.com/package/cursor-mcp-installer-free)
   
   <a href="https://www.linkedin.com/in/digitalmarketingstrategyexpert/">
     <img src="https://img.shields.io/badge/LinkedIn-Matthew_Cage-blue?style=flat&logo=linkedin" alt="LinkedIn"/>
   </a>
 </div>
 
-> **📢 NOW AVAILABLE ON NPM!** Install with a simple `npm install -g cursor-mcp-installer` command.
+> **📢 NOW AVAILABLE ON NPM!** Install with a simple `npm install -g cursor-mcp-installer-free` command or use directly with `npx cursor-mcp-installer-free` or `uvx cursor-mcp-installer-free`!
+
+## Quick Start Guide
+
+### Step 1: Add to Cursor Configuration
+
+Choose one of these methods to add the MCP Installer to your Cursor configuration:
+
+#### Using npx (Easiest - No Installation Required)
+
+Add this to your `~/.cursor/mcp.json` file (create it if it doesn't exist):
+
+```json
+{
+  "mcpServers": {
+    "MCP Installer": {
+      "command": "npx",
+      "type": "stdio",
+      "args": [
+        "cursor-mcp-installer-free"
+      ]
+    }
+  }
+}
+```
+
+#### Using uvx (Python Users)
+
+```json
+{
+  "mcpServers": {
+    "MCP Installer": {
+      "command": "uvx",
+      "type": "stdio",
+      "args": [
+        "cursor-mcp-installer-free"
+      ]
+    }
+  }
+}
+```
+
+#### Using npm (Global Installation)
+
+```bash
+npm install -g cursor-mcp-installer-free
+```
+
+Then add to your `~/.cursor/mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "MCP Installer": {
+      "command": "cursor-mcp-installer-free",
+      "type": "stdio"
+    }
+  }
+}
+```
+
+### Step 2: Restart Cursor
+
+Close and reopen Cursor to apply the configuration changes.
+
+### Step 3: Use Claude to Install Servers
+
+Ask Claude to install any MCP server for you:
+
+```
+Install the web search MCP server
+```
+
+or
+
+```
+Install the MCP server for OpenAPI schema exploration with my-schema.yaml
+```
 
 ## Features
 
@@ -58,7 +135,7 @@ There are several ways to install and use the Cursor MCP Installer:
 ### 1. Using npm (Recommended)
 
 ```bash
-npm install -g cursor-mcp-installer
+npm install -g cursor-mcp-installer-free
 ```
 
 After installation, add it to your Cursor MCP configuration file:
@@ -67,7 +144,7 @@ After installation, add it to your Cursor MCP configuration file:
 {
   "mcpServers": {
     "MCP Installer": {
-      "command": "cursor-mcp-installer",
+      "command": "cursor-mcp-installer-free",
       "type": "stdio"
     }
   }
@@ -85,7 +162,7 @@ You can use npx to run the package without installing it globally:
       "command": "npx",
       "type": "stdio",
       "args": [
-        "cursor-mcp-installer"
+        "cursor-mcp-installer-free"
       ]
     }
   }
@@ -103,7 +180,7 @@ If you prefer using Python's uv package manager:
       "command": "uvx",
       "type": "stdio",
       "args": [
-        "cursor-mcp-installer"
+        "cursor-mcp-installer-free"
       ]
     }
   }
@@ -116,8 +193,8 @@ Clone the repository and build it locally:
 
 ```bash
 # Clone the repository
-git clone https://github.com/matthewdcage/cursor-mcp-installer.git
-cd cursor-mcp-installer
+git clone https://github.com/cursor-ai/mcp-installer.git
+cd mcp-installer
 
 # Install dependencies and build
 npm install
@@ -133,14 +210,14 @@ Then configure Cursor to use your local installation:
       "command": "node",
       "type": "stdio",
       "args": [
-        "/path/to/cursor-mcp-installer/lib/index.mjs"
+        "/path/to/mcp-installer/lib/index.mjs"
       ]
     }
   }
 }
 ```
 
-Replace `/path/to/cursor-mcp-installer` with the actual path where you've cloned the repository.
+Replace `/path/to/mcp-installer` with the actual path where you've cloned the repository.
 
 ### Where is the Cursor MCP Configuration File?
 
@@ -295,6 +372,34 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 3. Commit your changes (`git commit -m 'Add some amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
+
+## Development
+
+### Building the Package
+
+```bash
+npm run build
+```
+
+### Publishing to npm
+
+Make sure you have the appropriate npm credentials and are logged in:
+
+```bash
+npm login
+```
+
+Then publish the package:
+
+```bash
+npm run publish-public
+```
+
+Alternatively, you can publish manually with:
+
+```bash
+npm publish --access public
+```
 
 ## License
 
