@@ -1,9 +1,9 @@
 id: cursor-mcp-installer
 name: Cursor MCP Installer
-description: A Model Context Protocol (MCP) server for installing and configuring other MCP servers within Cursor IDE
+description: A Model Context Protocol (MCP) server for installing and configuring other MCP servers
 
 services:
-  - id: installer
+  - id: mcp-installer
     name: MCP Installer
     protocol: mcp
     build:
@@ -11,9 +11,6 @@ services:
       dockerfile: Dockerfile
     transport:
       type: stdio
-    environment:
-      - name: SMITHERY_CONTAINER
-        value: "true"
 
 capabilities:
   tools:
@@ -26,16 +23,6 @@ capabilities:
           name:
             type: string
             description: The package name of the MCP server
-          args:
-            type: array
-            items:
-              type: string
-            description: The arguments to pass along
-          env:
-            type: array
-            items:
-              type: string
-            description: The environment variables to set, delimited by =
         required:
           - name
     
@@ -48,16 +35,6 @@ capabilities:
           path:
             type: string
             description: The path to the MCP server code cloned on your computer
-          args:
-            type: array
-            items:
-              type: string
-            description: The arguments to pass along
-          env:
-            type: array
-            items:
-              type: string
-            description: The environment variables to set, delimited by =
         required:
           - path
     
@@ -70,21 +47,5 @@ capabilities:
           name:
             type: string
             description: Display name for the MCP server in Cursor
-          command:
-            type: string
-            description: Command to execute (e.g., node, npx, python)
-          args:
-            type: array
-            items:
-              type: string
-            description: Arguments to pass to the command
-          path:
-            type: string
-            description: Path to the MCP server on disk (optional, used instead of command+args)
-          env:
-            type: array
-            items:
-              type: string
-            description: Environment variables to set, delimited by =
         required:
           - name 
