@@ -5,23 +5,22 @@ description: A Model Context Protocol (MCP) server for installing and configurin
 services:
   - id: installer
     name: MCP Installer
-    description: Installs and configures MCP servers for Cursor IDE
     protocol: mcp
     build:
       context: .
       dockerfile: Dockerfile
-    transport: 
+    transport:
       type: stdio
     environment:
       - name: SMITHERY_CONTAINER
         value: "true"
 
-# Define the MCP tools available
 capabilities:
   tools:
-    - name: install_repo_mcp_server
+    - id: install_repo_mcp_server
+      name: install_repo_mcp_server
       description: Install an MCP server via npx or uvx
-      parameters:
+      schema:
         type: object
         properties:
           name:
@@ -29,20 +28,21 @@ capabilities:
             description: The package name of the MCP server
           args:
             type: array
-            description: The arguments to pass along
             items:
               type: string
+            description: The arguments to pass along
           env:
             type: array
-            description: The environment variables to set, delimited by =
             items:
               type: string
+            description: The environment variables to set, delimited by =
         required:
           - name
     
-    - name: install_local_mcp_server
+    - id: install_local_mcp_server
+      name: install_local_mcp_server
       description: Install an MCP server whose code is cloned locally on your computer
-      parameters:
+      schema:
         type: object
         properties:
           path:
@@ -50,20 +50,21 @@ capabilities:
             description: The path to the MCP server code cloned on your computer
           args:
             type: array
-            description: The arguments to pass along
             items:
               type: string
+            description: The arguments to pass along
           env:
             type: array
-            description: The environment variables to set, delimited by =
             items:
               type: string
+            description: The environment variables to set, delimited by =
         required:
           - path
     
-    - name: add_to_cursor_config
+    - id: add_to_cursor_config
+      name: add_to_cursor_config
       description: Add any MCP server to Cursor's configuration
-      parameters:
+      schema:
         type: object
         properties:
           name:
@@ -74,16 +75,16 @@ capabilities:
             description: Command to execute (e.g., node, npx, python)
           args:
             type: array
-            description: Arguments to pass to the command
             items:
               type: string
+            description: Arguments to pass to the command
           path:
             type: string
             description: Path to the MCP server on disk (optional, used instead of command+args)
           env:
             type: array
-            description: Environment variables to set, delimited by =
             items:
               type: string
+            description: Environment variables to set, delimited by =
         required:
           - name 
