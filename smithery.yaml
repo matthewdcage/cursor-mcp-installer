@@ -12,27 +12,39 @@ services:
     transport:
       type: stdio
 
-tools:
+functions:
   - id: install_repo_mcp_server
     name: install_repo_mcp_server
     description: Install an MCP server via npx or uvx
     parameters:
-      name:
-        type: string
-        description: The package name of the MCP server
+      type: object
+      properties:
+        name:
+          type: string
+          description: The package name of the MCP server
+      required:
+        - name
       
   - id: install_local_mcp_server
     name: install_local_mcp_server
     description: Install an MCP server whose code is cloned locally on your computer
     parameters:
-      path:
-        type: string
-        description: The path to the MCP server code cloned on your computer
+      type: object
+      properties:
+        path:
+          type: string
+          description: The path to the MCP server code cloned on your computer
+      required:
+        - path
   
   - id: add_to_cursor_config
     name: add_to_cursor_config
     description: Add any MCP server to Cursor's configuration
     parameters:
-      name:
-        type: string
-        description: Display name for the MCP server in Cursor 
+      type: object
+      properties:
+        name:
+          type: string
+          description: Display name for the MCP server in Cursor
+      required:
+        - name 
