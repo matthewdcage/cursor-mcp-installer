@@ -11,6 +11,9 @@ import * as fs from "fs";
 import * as path from "path";
 import { spawnPromise } from "spawn-rx";
 
+// Add startup logs for debugging
+console.log("Starting cursor-mcp-installer-free MCP server...");
+
 const server = new Server(
   {
     name: "cursor-mcp-installer-free",
@@ -147,10 +150,18 @@ function installToCursor(
   env?: string[]
 ) {
   const configPath = path.join(os.homedir(), ".cursor", "mcp.json");
-
+  
+  // In Smithery environment, we may not have direct file system access
+  // Instead, return the config that would be written
+  const isInContainer = process.env.SMITHERY_CONTAINER === 'true';
+  
   let config: any;
   try {
-    config = JSON.parse(fs.readFileSync(configPath, "utf8"));
+    if (!isInContainer && fs.existsSync(configPath)) {
+      config = JSON.parse(fs.readFileSync(configPath, "utf8"));
+    } else {
+      config = { mcpServers: {} };
+    }
   } catch (e) {
     config = { mcpServers: {} };
   }
@@ -171,7 +182,19 @@ function installToCursor(
 
   config.mcpServers = config.mcpServers || {};
   config.mcpServers[name] = newServer;
-  fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
+  
+  if (!isInContainer && fs.existsSync(path.dirname(configPath))) {
+    try {
+      fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
+      return true;
+    } catch (e) {
+      console.error("Failed to write config file:", e);
+      // Continue to return the config even if we can't write it
+    }
+  }
+  
+  // Return the configuration that would be written
+  return config;
 }
 
 function installRepoWithArgsToCursor(
@@ -283,46 +306,123 @@ async function attemptNodeInstall(
 
 async function addToCursorConfig(
   name: string,
-  command?: string,
+  command?: string, 
   args?: string[],
-  path?: string,
+  serverPath?: string,
   env?: string[]
 ) {
-  // Determine if we're using command+args or a direct path
-  let cmd = command || "node";
-  let cmdArgs = args || [];
+  const isInContainer = process.env.SMITHERY_CONTAINER === 'true';
   
-  // If path is provided, use it directly
-  if (path) {
-    if (path.endsWith(".js") || path.endsWith(".mjs")) {
-      cmd = "node";
-      cmdArgs = [path];
-    } else if (path.endsWith(".py")) {
-      cmd = "python";
-      cmdArgs = [path];
-    } else {
-      // Assume it's an executable
-      cmd = path;
-      cmdArgs = [];
-    }
+  // Handle the case where the user provides either a command or a path
+  if (!serverPath && !command) {
+    return {
+      content: [
+        {
+          type: "text",
+          text: "Error: You must provide either a command or a path!",
+        },
+      ],
+      isError: true,
+    };
   }
   
-  // Format the name nicely for display
-  const formattedName = name
-    .replace(/-/g, ' ')
-    .replace(/\b\w/g, l => l.toUpperCase());
+  try {
+    // If a server path is provided, use that instead of the command+args
+    if (serverPath) {
+      if (!isInContainer && !fs.existsSync(serverPath)) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Error: Path ${serverPath} does not exist!`,
+            },
+          ],
+          isError: true,
+        };
+      }
+      
+      // Use node to run the server if it's a JavaScript file
+      if (serverPath.endsWith('.js') || serverPath.endsWith('.mjs')) {
+        command = 'node';
+        args = [serverPath, ...(args || [])];
+      } else if (serverPath.endsWith('.py')) {
+        // Use python for Python files
+        command = 'python3';
+        args = [serverPath, ...(args || [])];
+      } else {
+        // Otherwise use the serverPath as the command
+        command = serverPath;
+        args = args || [];
+      }
+    }
     
-  // Install to Cursor config
-  installToCursor(formattedName, cmd, cmdArgs, env);
-  
-  return {
-    content: [
-      {
-        type: "text",
-        text: `Added ${formattedName} to Cursor's MCP configuration. Please restart Cursor to apply the changes.`,
-      },
-    ],
-  };
+    // Create server config
+    const envObj = (env ?? []).reduce((acc: Record<string, string>, val) => {
+      const [key, value] = val.split("=");
+      if (key) acc[key] = value || "";
+      return acc;
+    }, {} as Record<string, string>);
+    
+    const serverConfig = {
+      command: command!,  // We've verified either command or serverPath is provided
+      type: "stdio",
+      args: args || [],
+      ...(env && env.length > 0 ? { env: envObj } : {})
+    };
+    
+    if (isInContainer) {
+      // In Smithery, just return the configuration
+      const config: { mcpServers: Record<string, any> } = { mcpServers: {} };
+      config.mcpServers[name] = serverConfig;
+      
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Here's the configuration to add to your ~/.cursor/mcp.json file:\n\n` +
+                  `\`\`\`json\n${JSON.stringify(config, null, 2)}\n\`\`\`\n\n` +
+                  `After adding this configuration, restart Cursor to apply the changes.`
+          },
+        ],
+      };
+    } else {
+      // In local environment, update the config file
+      const configPath = path.join(os.homedir(), ".cursor", "mcp.json");
+      
+      let config: { mcpServers: Record<string, any> };
+      try {
+        config = fs.existsSync(configPath) 
+          ? JSON.parse(fs.readFileSync(configPath, "utf8")) 
+          : { mcpServers: {} };
+      } catch (e) {
+        config = { mcpServers: {} };
+      }
+      
+      config.mcpServers = config.mcpServers || {};
+      config.mcpServers[name] = serverConfig;
+      
+      fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
+      
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Successfully added ${name} to your Cursor configuration! Please restart Cursor to apply the changes.`,
+          },
+        ],
+      };
+    }
+  } catch (e) {
+    return {
+      content: [
+        {
+          type: "text",
+          text: `Error: ${e}`,
+        },
+      ],
+      isError: true,
+    };
+  }
 }
 
 async function installLocalMcpServer(
@@ -330,6 +430,21 @@ async function installLocalMcpServer(
   args?: string[],
   env?: string[]
 ) {
+  const isInContainer = process.env.SMITHERY_CONTAINER === 'true';
+  
+  if (isInContainer) {
+    return {
+      content: [
+        {
+          type: "text",
+          text: "Local directory installation is not available in the Smithery environment. " +
+                "Please use this tool locally with Cursor to install from local directories.",
+        },
+      ],
+      isError: true,
+    };
+  }
+
   if (!fs.existsSync(dirPath)) {
     return {
       content: [
@@ -392,110 +507,75 @@ async function installRepoMcpServer(
       content: [
         {
           type: "text",
-          text: `Node.js is not installed, please install it!`,
+          text: "Error: Node.js is not installed, please install it!",
         },
       ],
       isError: true,
     };
   }
 
-  // Check if this is a git repository URL
-  const isGitRepo = name.endsWith('.git') || name.includes('github.com') || name.includes('gitlab.com');
-  
-  if (isGitRepo) {
-    // For Git repos, we need to clone and examine the structure
-    const repoName = name.split('/').pop()?.replace('.git', '') || 'mcp-repo';
-    const tempDir = path.join(os.tmpdir(), `mcp-${repoName}-${Date.now()}`);
-    
-    try {
-      fs.mkdirSync(tempDir, { recursive: true });
-      await spawnPromise('git', ['clone', name, tempDir]);
+  const isNpm = await isNpmPackage(name);
+  const hasUv = await hasUvx();
+
+  if (!isNpm && !hasUv) {
+    return {
+      content: [
+        {
+          type: "text",
+          text: "Error: Package not found in npm registry and uvx is not installed!",
+        },
+      ],
+      isError: true,
+    };
+  }
+
+  const isInContainer = process.env.SMITHERY_CONTAINER === 'true';
+
+  try {
+    if (isInContainer) {
+      // In Smithery, we can't directly install - provide instructions instead
+      const packageManager = isNpm ? "npm" : "uvx";
+      const configResult = installRepoWithArgsToCursor(name, isNpm, args, env);
       
-      // Check if the repo has an index.mjs/index.js file at the root
-      const hasIndexMjs = fs.existsSync(path.join(tempDir, 'index.mjs'));
-      const hasIndexJs = fs.existsSync(path.join(tempDir, 'index.js'));
-      
-      if (hasIndexMjs || hasIndexJs) {
-        const indexFile = hasIndexMjs ? 'index.mjs' : 'index.js';
-        
-        // Check if package.json exists before parsing
-        if (fs.existsSync(path.join(tempDir, 'package.json'))) {
-          // Install dependencies
-          await spawnPromise('npm', ['install'], { cwd: tempDir });
-        }
-        
-        // Create a friendly name from the repo name
-        const friendlyName = repoName
-          .replace(/-/g, ' ')
-          .replace(/\b\w/g, l => l.toUpperCase());
-        
-        // Install to Cursor, properly handling the index file
-        const mainFilePath = path.join(tempDir, indexFile);
-        
-        installToCursor(friendlyName, 'node', [mainFilePath, ...(args || [])], env);
-        
-        return {
-          content: [
-            {
-              type: "text",
-              text: `Installed ${friendlyName} MCP server from Git repository to Cursor successfully! Please restart Cursor to apply the changes.`,
-            },
-          ],
-        };
-      }
-    } catch (error: any) {
-      console.error(`Error cloning repository: ${error.message || 'Unknown error'}`);
       return {
         content: [
           {
             type: "text",
-            text: `Error installing from Git repository: ${error.message || 'Unknown error'}`,
+            text: `Instructions for installing ${name}:\n\n` +
+                  `1. Install the package with: ${packageManager} install -g ${name}\n\n` +
+                  `2. Add the following to your ~/.cursor/mcp.json file:\n\n` +
+                  `\`\`\`json\n${JSON.stringify(configResult, null, 2)}\n\`\`\`\n\n` +
+                  `3. Restart Cursor and the MCP server will be available`
           },
         ],
-        isError: true,
+      };
+    } else {
+      // Normal direct installation
+      installRepoWithArgsToCursor(name, isNpm, args, env);
+      
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Successfully installed the ${name} MCP server!`,
+          },
+        ],
       };
     }
-  }
-
-  if (await isNpmPackage(name)) {
-    // Install to Cursor
-    installRepoWithArgsToCursor(name, true, args, env);
-
+  } catch (e) {
     return {
       content: [
         {
           type: "text",
-          text: "Installed MCP server via npx to Cursor successfully! Please restart Cursor to apply the changes.",
-        },
-      ],
-    };
-  }
-
-  if (!(await hasUvx())) {
-    return {
-      content: [
-        {
-          type: "text",
-          text: `Python uv is not installed, please install it! Go to https://docs.astral.sh/uv for installation instructions.`,
+          text: `Error: ${e}`,
         },
       ],
       isError: true,
     };
   }
-
-  // Install to Cursor
-  installRepoWithArgsToCursor(name, false, args, env);
-
-  return {
-    content: [
-      {
-        type: "text",
-        text: "Installed MCP server via uvx to Cursor successfully! Please restart Cursor to apply the changes.",
-      },
-    ],
-  };
 }
 
+// Add the server request handler for tool calls
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   try {
     if (request.params.name === "install_repo_mcp_server") {
@@ -519,7 +599,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     }
     
     if (request.params.name === "add_to_cursor_config") {
-      const { name, command, args, path, env } = request.params.arguments as {
+      const { name, command, args, path: serverPath, env } = request.params.arguments as {
         name: string;
         command?: string;
         args?: string[];
@@ -527,7 +607,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         env?: string[];
       };
 
-      return await addToCursorConfig(name, command, args, path, env);
+      return await addToCursorConfig(name, command, args, serverPath, env);
     }
 
     throw new Error(`Unknown tool: ${request.params.name}`);
@@ -545,8 +625,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 });
 
 async function runServer() {
+  console.log("Initializing MCP server transport...");
   const transport = new StdioServerTransport();
+  console.log("Connecting MCP server...");
   await server.connect(transport);
+  console.log("MCP server connected and ready");
 }
 
-runServer().catch(console.error); 
+runServer().catch((error) => {
+  console.error("Error starting MCP server:", error);
+  process.exit(1);
+});
