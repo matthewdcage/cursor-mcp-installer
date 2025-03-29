@@ -6,12 +6,15 @@ services:
   - id: installer
     name: MCP Installer
     description: Installs and configures MCP servers for Cursor IDE
-    dockerfile: Dockerfile
-    transport: stdio
+    protocol: mcp
     build:
       context: .
-    protocol:
-      type: mcp
+      dockerfile: Dockerfile
+    transport: 
+      type: stdio
+    environment:
+      - name: SMITHERY_CONTAINER
+        value: "true"
 
 # Define the MCP tools available
 capabilities:
@@ -26,14 +29,14 @@ capabilities:
             description: The package name of the MCP server
           args:
             type: array
+            description: The arguments to pass along
             items:
               type: string
-            description: The arguments to pass along
           env:
             type: array
+            description: The environment variables to set, delimited by =
             items:
               type: string
-            description: The environment variables to set, delimited by =
         required:
           - name
     
@@ -47,14 +50,14 @@ capabilities:
             description: The path to the MCP server code cloned on your computer
           args:
             type: array
+            description: The arguments to pass along
             items:
               type: string
-            description: The arguments to pass along
           env:
             type: array
+            description: The environment variables to set, delimited by =
             items:
               type: string
-            description: The environment variables to set, delimited by =
         required:
           - path
     
@@ -71,16 +74,16 @@ capabilities:
             description: Command to execute (e.g., node, npx, python)
           args:
             type: array
+            description: Arguments to pass to the command
             items:
               type: string
-            description: Arguments to pass to the command
           path:
             type: string
             description: Path to the MCP server on disk (optional, used instead of command+args)
           env:
             type: array
+            description: Environment variables to set, delimited by =
             items:
               type: string
-            description: Environment variables to set, delimited by =
         required:
           - name 
