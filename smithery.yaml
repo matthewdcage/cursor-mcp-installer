@@ -1,10 +1,10 @@
 id: cursor-mcp-installer
 name: Cursor MCP Installer
-description: A Model Context Protocol (MCP) server for installing and configuring other MCP servers
+description: A tool to install MCP servers in Cursor
 
 services:
-  - id: mcp-installer
-    name: MCP Installer
+  - id: mcp-installer-service
+    name: MCP Installer Service
     protocol: mcp
     build:
       context: .
@@ -12,40 +12,27 @@ services:
     transport:
       type: stdio
 
-capabilities:
-  tools:
-    - id: install_repo_mcp_server
-      name: install_repo_mcp_server
-      description: Install an MCP server via npx or uvx
-      schema:
-        type: object
-        properties:
-          name:
-            type: string
-            description: The package name of the MCP server
-        required:
-          - name
-    
-    - id: install_local_mcp_server
-      name: install_local_mcp_server
-      description: Install an MCP server whose code is cloned locally on your computer
-      schema:
-        type: object
-        properties:
-          path:
-            type: string
-            description: The path to the MCP server code cloned on your computer
-        required:
-          - path
-    
-    - id: add_to_cursor_config
-      name: add_to_cursor_config
-      description: Add any MCP server to Cursor's configuration
-      schema:
-        type: object
-        properties:
-          name:
-            type: string
-            description: Display name for the MCP server in Cursor
-        required:
-          - name 
+tools:
+  - id: install_repo_mcp_server
+    name: install_repo_mcp_server
+    description: Install an MCP server via npx or uvx
+    parameters:
+      name:
+        type: string
+        description: The package name of the MCP server
+      
+  - id: install_local_mcp_server
+    name: install_local_mcp_server
+    description: Install an MCP server whose code is cloned locally on your computer
+    parameters:
+      path:
+        type: string
+        description: The path to the MCP server code cloned on your computer
+  
+  - id: add_to_cursor_config
+    name: add_to_cursor_config
+    description: Add any MCP server to Cursor's configuration
+    parameters:
+      name:
+        type: string
+        description: Display name for the MCP server in Cursor 
