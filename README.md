@@ -365,16 +365,28 @@ npm login
 Then publish the package:
 
 ```bash
-npm run publish-public
-```
-
-Alternatively, you can publish manually with:
-
-```bash
 npm publish --access public
 ```
 
 > **Note:** When publishing updates to npm, ensure the package.json, package-lock.json, and all examples in the documentation reference the same version number and correct repository URLs.
+
+## Version History
+
+### v0.1.2 (Current)
+- Fixed installation instructions to include required `index.mjs` argument in command args
+- Updated repository URLs
+- Improved error handling for installation failures
+- Added support for more MCP server types
+- Cleaned up repository structure
+
+### v0.1.1
+- Interim release with package name changes
+
+### v0.1.0
+- Initial public release
+- Support for installing MCP servers from npm packages
+- Support for installing MCP servers from local directories
+- Support for configuring MCP servers for Cursor
 
 ## License
 

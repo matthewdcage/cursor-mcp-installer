@@ -17,7 +17,7 @@ console.log("Starting cursor-mcp-installer-free MCP server...");
 const server = new Server(
   {
     name: "cursor-mcp-installer-free",
-    version: "0.1.1",
+    version: "0.1.2",
   },
   {
     capabilities: {
