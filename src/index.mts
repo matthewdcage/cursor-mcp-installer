@@ -17,7 +17,7 @@ console.log("Starting cursor-mcp-installer-free MCP server...");
 const server = new Server(
   {
     name: "cursor-mcp-installer-free",
-    version: "0.1.2",
+    version: "0.1.3",
   },
   {
     capabilities: {
@@ -143,6 +143,72 @@ async function isNpmPackage(name: string) {
   }
 }
 
+// New helper functions for path handling and server detection
+
+/**
+ * Normalizes and validates a file path
+ * @param filePath The file path to normalize
+ * @param cwd Optional current working directory for resolving relative paths
+ * @returns Normalized absolute path
+ */
+function normalizeServerPath(filePath: string, cwd?: string): string {
+  // Handle file paths with spaces that might be unquoted
+  filePath = filePath.trim();
+  
+  // Convert relative to absolute path if needed
+  if (!path.isAbsolute(filePath) && cwd) {
+    filePath = path.resolve(cwd, filePath);
+  }
+  
+  // Return normalized path (even if it doesn't exist, as it might be a command)
+  return path.normalize(filePath);
+}
+
+/**
+ * Looks for a schema file in the provided arguments
+ * @param args Array of arguments to search
+ * @returns The schema file path if found, undefined otherwise
+ */
+function findSchemaFile(args?: string[]): string | undefined {
+  if (!args || args.length === 0) return undefined;
+  
+  // Check all arguments for schema files
+  return args.find(arg => 
+    arg && typeof arg === 'string' && 
+    /\.(yaml|yml|json|openapi)$/i.test(arg));
+}
+
+/**
+ * Finds a server entry point in a directory
+ * @param dirPath Directory to search
+ * @returns Object with path and command, or undefined if not found
+ */
+function findServerEntryPoint(dirPath: string): { path: string, command: string } | undefined {
+  // Look for common entry point patterns
+  const entryPointPatterns = [
+    // Node.js patterns
+    { file: 'index.js', command: 'node' },
+    { file: 'index.mjs', command: 'node' },
+    { file: 'server.js', command: 'node' },
+    { file: 'dist/index.js', command: 'node' },
+    { file: 'lib/index.js', command: 'node' },
+    { file: 'lib/index.mjs', command: 'node' },
+    // Python patterns
+    { file: 'server.py', command: 'python3' },
+    { file: 'main.py', command: 'python3' },
+    { file: '__main__.py', command: 'python3' }
+  ];
+  
+  for (const pattern of entryPointPatterns) {
+    const filePath = path.join(dirPath, pattern.file);
+    if (fs.existsSync(filePath)) {
+      return { path: filePath, command: pattern.command };
+    }
+  }
+  
+  return undefined;
+}
+
 function installToCursor(
   name: string,
   cmd: string,
@@ -173,10 +239,24 @@ function installToCursor(
     return acc;
   }, {} as Record<string, string>);
 
+  // Normalize any file paths in args
+  const normalizedArgs = args.map(arg => {
+    // Only normalize if it looks like a file path
+    if (arg && typeof arg === 'string' && (arg.includes('/') || arg.includes('\\'))) {
+      try {
+        return normalizeServerPath(arg);
+      } catch (e) {
+        // If normalization fails, return the original arg
+        return arg;
+      }
+    }
+    return arg;
+  });
+
   const newServer = {
     command: cmd,
     type: "stdio",
-    args: args,
+    args: normalizedArgs,
     ...(env ? { env: envObj } : {}),
   };
 
@@ -213,11 +293,10 @@ function installRepoWithArgsToCursor(
 
   // Check if we're using a package that requires special handling
   if (name === 'mcp-openapi-schema' || name.includes('openapi-schema')) {
-    // For OpenAPI schema servers, we need to pass the schema file as an argument to index.mjs
-    const hasSchemaFile = args && args.length > 0 && 
-      (args[0].endsWith('.yaml') || args[0].endsWith('.json') || args[0].endsWith('.yml'));
+    // For OpenAPI schema servers, find schema file anywhere in the arguments
+    const schemaFile = findSchemaFile(args);
     
-    if (hasSchemaFile) {
+    if (schemaFile) {
       // Special configuration for OpenAPI schema servers
       // First try to get the installed package path
       try {
@@ -225,10 +304,22 @@ function installRepoWithArgsToCursor(
         const indexPath = path.join(packagePath, 'index.mjs');
         
         if (fs.existsSync(indexPath)) {
+          // Create new args array with normalized schema path
+          const newArgs = args?.map(arg => {
+            if (arg === schemaFile) {
+              try {
+                return normalizeServerPath(schemaFile, process.cwd());
+              } catch (e) {
+                return arg;
+              }
+            }
+            return arg;
+          }) ?? [];
+          
           installToCursor(
             formattedName,
             'node',
-            [indexPath, ...(args ?? [])],
+            [indexPath, ...newArgs],
             env
           );
           return;
@@ -290,18 +381,29 @@ async function attemptNodeInstall(
     fs.readFileSync(path.join(directory, "package.json"), "utf-8")
   );
 
+  const result: Record<string, string> = {};
+
+  // Check for bin entries first
   if (pkg.bin) {
-    return Object.keys(pkg.bin).reduce((acc, key) => {
-      acc[key] = path.resolve(directory, pkg.bin[key]);
-      return acc;
-    }, {} as Record<string, string>);
+    Object.keys(pkg.bin).forEach(key => {
+      result[key] = normalizeServerPath(pkg.bin[key], directory);
+    });
   }
 
-  if (pkg.main) {
-    return { [pkg.name]: path.resolve(directory, pkg.main) };
+  // If no bins, try main entry point
+  if (Object.keys(result).length === 0 && pkg.main) {
+    result[pkg.name] = normalizeServerPath(pkg.main, directory);
   }
 
-  return {};
+  // If still no results, try to find a server entry point
+  if (Object.keys(result).length === 0) {
+    const entryPoint = findServerEntryPoint(directory);
+    if (entryPoint) {
+      result[pkg.name || 'server'] = entryPoint.path;
+    }
+  }
+
+  return result;
 }
 
 async function addToCursorConfig(
@@ -329,12 +431,15 @@ async function addToCursorConfig(
   try {
     // If a server path is provided, use that instead of the command+args
     if (serverPath) {
-      if (!isInContainer && !fs.existsSync(serverPath)) {
+      // Normalize the server path
+      const normalizedPath = normalizeServerPath(serverPath, process.cwd());
+      
+      if (!isInContainer && !fs.existsSync(normalizedPath)) {
         return {
           content: [
             {
               type: "text",
-              text: `Error: Path ${serverPath} does not exist!`,
+              text: `Error: Path ${normalizedPath} does not exist!`,
             },
           ],
           isError: true,
@@ -342,18 +447,32 @@ async function addToCursorConfig(
       }
       
       // Use node to run the server if it's a JavaScript file
-      if (serverPath.endsWith('.js') || serverPath.endsWith('.mjs')) {
+      if (normalizedPath.endsWith('.js') || normalizedPath.endsWith('.mjs')) {
         command = 'node';
-        args = [serverPath, ...(args || [])];
-      } else if (serverPath.endsWith('.py')) {
+        args = [normalizedPath, ...(args || [])];
+      } else if (normalizedPath.endsWith('.py')) {
         // Use python for Python files
         command = 'python3';
-        args = [serverPath, ...(args || [])];
+        args = [normalizedPath, ...(args || [])];
       } else {
         // Otherwise use the serverPath as the command
-        command = serverPath;
+        command = normalizedPath;
         args = args || [];
       }
+    } else if (args) {
+      // If we have command and args, normalize any file paths in args
+      args = args.map(arg => {
+        // Only normalize if it looks like a file path
+        if (arg && typeof arg === 'string' && (arg.includes('/') || arg.includes('\\'))) {
+          try {
+            return normalizeServerPath(arg, process.cwd());
+          } catch (e) {
+            // If normalization fails, return the original arg
+            return arg;
+          }
+        }
+        return arg;
+      });
     }
     
     // Create server config
@@ -445,56 +564,100 @@ async function installLocalMcpServer(
     };
   }
 
-  if (!fs.existsSync(dirPath)) {
-    return {
-      content: [
-        {
-          type: "text",
-          text: `Path ${dirPath} does not exist locally!`,
-        },
-      ],
-      isError: true,
-    };
-  }
+  try {
+    // Normalize the directory path
+    const normalizedDirPath = normalizeServerPath(dirPath, process.cwd());
+    
+    if (!fs.existsSync(normalizedDirPath)) {
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Path ${normalizedDirPath} does not exist locally!`,
+          },
+        ],
+        isError: true,
+      };
+    }
 
-  if (fs.existsSync(path.join(dirPath, "package.json"))) {
-    const servers = await attemptNodeInstall(dirPath);
+    // Check if it's a Node.js package with package.json
+    if (fs.existsSync(path.join(normalizedDirPath, "package.json"))) {
+      const servers = await attemptNodeInstall(normalizedDirPath);
 
-    Object.keys(servers).forEach((name) => {
-      // Install to Cursor
-      const formattedName = name
+      if (Object.keys(servers).length > 0) {
+        Object.keys(servers).forEach((name) => {
+          // Install to Cursor
+          const formattedName = name
+            .replace(/-/g, ' ')
+            .replace(/\b\w/g, l => l.toUpperCase());
+            
+          installToCursor(
+            formattedName,
+            "node",
+            [servers[name], ...(args ?? [])],
+            env
+          );
+        });
+
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Installed the following servers to Cursor: ${Object.keys(
+                servers
+              ).join(", ")}. Please restart Cursor to apply the changes.`,
+            },
+          ],
+        };
+      }
+    }
+
+    // If not a Node.js package or no server found, try to find a server entry point
+    const entryPoint = findServerEntryPoint(normalizedDirPath);
+    if (entryPoint) {
+      // Get the directory name for a default name
+      const dirName = path.basename(normalizedDirPath);
+      const formattedName = dirName
         .replace(/-/g, ' ')
         .replace(/\b\w/g, l => l.toUpperCase());
         
       installToCursor(
         formattedName,
-        "node",
-        [servers[name], ...(args ?? [])],
+        entryPoint.command,
+        [entryPoint.path, ...(args ?? [])],
         env
       );
-    });
+      
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Installed ${formattedName} to Cursor. Please restart Cursor to apply the changes.`,
+          },
+        ],
+      };
+    }
 
     return {
       content: [
         {
           type: "text",
-          text: `Installed the following servers to Cursor: ${Object.keys(
-            servers
-          ).join(", ")}. Please restart Cursor to apply the changes.`,
+          text: `Can't figure out how to install ${normalizedDirPath}. No server entry point was found.`,
         },
       ],
+      isError: true,
+    };
+  } catch (e) {
+    return {
+      content: [
+        {
+          type: "text",
+          text: `Error installing from local directory: ${e}`,
+        },
+      ],
+      isError: true,
     };
   }
-
-  return {
-    content: [
-      {
-        type: "text",
-        text: `Can't figure out how to install ${dirPath}`,
-      },
-    ],
-    isError: true,
-  };
 }
 
 async function installRepoMcpServer(

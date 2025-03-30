@@ -36,6 +36,8 @@
 
 > **📢 NOW AVAILABLE ON NPM!** Install with a simple `npm install -g cursor-mcp-installer-free` command or use directly with `npx cursor-mcp-installer-free` or `uvx cursor-mcp-installer-free`!
 
+> **🔄 Latest Updates (v0.1.3):** Improved path handling for all MCP server installations, better OpenAPI schema detection, and more robust server discovery in local directories. Thanks to [@ItzAmirreza](https://github.com/ItzAmirreza) for submitting the initial installation path handling issue. See [CHANGELOG.md](CHANGELOG.md) for details.
+
 ## Quick Start Guide
 
 ### Step 1: Add to Cursor Configuration
@@ -100,6 +102,17 @@ or
 ```
 Install the MCP server for OpenAPI schema exploration with my-schema.yaml
 ```
+
+### Step 4: What You'll See When Installed
+
+Once properly installed and Cursor is restarted, you'll see the MCP Installer available in the sidebar when using Claude:
+
+![MCP Installer Interface](https://raw.githubusercontent.com/matthewdcage/cursor-mcp-installer/main/docs/mcp-installer-interface.png)
+
+The MCP Installer provides three main tools:
+- `install_repo_mcp_server`: Install MCP servers from npm packages or repositories
+- `install_local_mcp_server`: Install MCP servers from local directories
+- `add_to_cursor_config`: Add custom MCP server configurations
 
 ## Features
 
