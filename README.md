@@ -55,7 +55,7 @@ Add this to your `~/.cursor/mcp.json` file (create it if it doesn't exist):
       "command": "npx",
       "type": "stdio",
       "args": [
-        "cursor-mcp-installer-free",
+        "cursor-mcp-installer-free@0.1.3",
         "index.mjs"
       ]
     }
@@ -66,7 +66,7 @@ Add this to your `~/.cursor/mcp.json` file (create it if it doesn't exist):
 #### Using npm (Global Installation)
 
 ```bash
-npm install -g cursor-mcp-installer-free
+npm install -g cursor-mcp-installer-free@0.1.3
 ```
 
 Then add to your `~/.cursor/mcp.json`:
@@ -135,7 +135,7 @@ There are several ways to install and use the Cursor MCP Installer:
 ### 1. Using npm (Recommended)
 
 ```bash
-npm install -g cursor-mcp-installer-free
+npm install -g cursor-mcp-installer-free@0.1.3
 ```
 
 After installation, add it to your Cursor MCP configuration file:
@@ -165,7 +165,7 @@ You can use npx to run the package without installing it globally:
       "command": "npx",
       "type": "stdio",
       "args": [
-        "cursor-mcp-installer-free",
+        "cursor-mcp-installer-free@0.1.3",
         "index.mjs"
       ]
     }
@@ -213,6 +213,27 @@ The Cursor MCP configuration file is located at:
 - **Windows**: `%USERPROFILE%\.cursor\mcp.json`
 
 If the file doesn't exist, you can create it with the content from any of the installation methods above.
+
+## Path Handling Improvements in v0.1.3
+
+Version 0.1.3 introduces significant improvements to path handling for MCP server installations:
+
+### Enhanced Path Resolution
+- Properly normalizes both relative and absolute paths
+- Handles paths with spaces and special characters
+- Ensures consistent path formatting across different operating systems
+
+### Better Schema Detection
+- Now scans all arguments for schema files, not just the first one
+- Supports more schema file extensions (.yaml, .yml, .json, .openapi)
+- Properly normalizes schema file paths before passing to servers
+
+### Improved Server Discovery
+- Added detection of common server entry points in local directories
+- Enhanced support for Python-based MCP servers
+- Better error reporting for path-related issues
+
+These improvements make the MCP Installer more robust for all types of server installations, especially when dealing with custom file paths, OpenAPI schemas, and local directory installations.
 
 ## Usage
 
@@ -385,7 +406,17 @@ npm publish --access public
 
 ## Version History
 
-### v0.1.2 (Current)
+### v0.1.3 (Current)
+- Enhanced path handling for all MCP server installations
+- Better schema file detection for OpenAPI schema servers
+- Improved directory scanning for server entry points
+- Added new helper functions for path normalization
+- Added support for detecting Python server files
+- Fixed issues with paths containing spaces
+- Created CHANGELOG.md for tracking version history
+- Thanks to [@ItzAmirreza](https://github.com/ItzAmirreza) for submitting the path handling issue
+
+### v0.1.2
 - Fixed installation instructions to include required `index.mjs` argument in command args
 - Updated repository URLs
 - Improved error handling for installation failures
