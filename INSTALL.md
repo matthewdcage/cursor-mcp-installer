@@ -53,7 +53,6 @@ npm install -g cursor-mcp-installer-free
 ```
 
 3. Restart Cursor
-4. Ask Claude to "Install the web search MCP server"
 
 ## Troubleshooting
 
