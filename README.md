@@ -53,23 +53,8 @@ Add this to your `~/.cursor/mcp.json` file (create it if it doesn't exist):
       "command": "npx",
       "type": "stdio",
       "args": [
-        "cursor-mcp-installer-free"
-      ]
-    }
-  }
-}
-```
-
-#### Using uvx (Python Users)
-
-```json
-{
-  "mcpServers": {
-    "MCP Installer": {
-      "command": "uvx",
-      "type": "stdio",
-      "args": [
-        "cursor-mcp-installer-free"
+        "cursor-mcp-installer-free",
+        "index.mjs"
       ]
     }
   }
@@ -89,7 +74,10 @@ Then add to your `~/.cursor/mcp.json`:
   "mcpServers": {
     "MCP Installer": {
       "command": "cursor-mcp-installer-free",
-      "type": "stdio"
+      "type": "stdio",
+      "args": [
+        "index.mjs"
+      ]
     }
   }
 }
@@ -126,7 +114,6 @@ Before using this tool, you need to have installed:
 
 - [Node.js](https://nodejs.org/) (for npm packages)
 - [Cursor IDE](https://cursor.sh/)
-- [uv](https://docs.astral.sh/uv/) (optional, for Python packages)
 
 ## Installation
 
@@ -145,7 +132,10 @@ After installation, add it to your Cursor MCP configuration file:
   "mcpServers": {
     "MCP Installer": {
       "command": "cursor-mcp-installer-free",
-      "type": "stdio"
+      "type": "stdio",
+      "args": [
+        "index.mjs"
+      ]
     }
   }
 }
@@ -162,39 +152,22 @@ You can use npx to run the package without installing it globally:
       "command": "npx",
       "type": "stdio",
       "args": [
-        "cursor-mcp-installer-free"
+        "cursor-mcp-installer-free",
+        "index.mjs"
       ]
     }
   }
 }
 ```
 
-### 3. Using uv/uvx (Python Package Manager)
-
-If you prefer using Python's uv package manager:
-
-```json
-{
-  "mcpServers": {
-    "MCP Installer": {
-      "command": "uvx",
-      "type": "stdio",
-      "args": [
-        "cursor-mcp-installer-free"
-      ]
-    }
-  }
-}
-```
-
-### 4. Direct from GitHub
+### 3. Direct from GitHub
 
 Clone the repository and build it locally:
 
 ```bash
 # Clone the repository
-git clone https://github.com/cursor-ai/mcp-installer.git
-cd mcp-installer
+git clone https://github.com/matthewdcage/cursor-mcp-installer.git
+cd cursor-mcp-installer
 
 # Install dependencies and build
 npm install
@@ -210,14 +183,14 @@ Then configure Cursor to use your local installation:
       "command": "node",
       "type": "stdio",
       "args": [
-        "/path/to/mcp-installer/lib/index.mjs"
+        "/path/to/cursor-mcp-installer/lib/index.mjs"
       ]
     }
   }
 }
 ```
 
-Replace `/path/to/mcp-installer` with the actual path where you've cloned the repository.
+Replace `/path/to/cursor-mcp-installer` with the actual path where you've cloned the repository.
 
 ### Where is the Cursor MCP Configuration File?
 
@@ -400,6 +373,8 @@ Alternatively, you can publish manually with:
 ```bash
 npm publish --access public
 ```
+
+> **Note:** When publishing updates to npm, ensure the package.json, package-lock.json, and all examples in the documentation reference the same version number and correct repository URLs.
 
 ## License
 

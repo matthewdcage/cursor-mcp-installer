@@ -17,7 +17,8 @@ This guide provides the simplest ways to install and use the MCP Installer.
       "command": "npx",
       "type": "stdio",
       "args": [
-        "cursor-mcp-installer-free"
+        "cursor-mcp-installer-free",
+        "index.mjs"
       ]
     }
   }
@@ -27,39 +28,7 @@ This guide provides the simplest ways to install and use the MCP Installer.
 3. Restart Cursor
 4. Ask Claude to "Install the web search MCP server"
 
-## Option 2: Using uvx (For Python Users)
-
-If you prefer using Python's uv package manager:
-
-1. Make sure uv is installed:
-   ```bash
-   pip install uv
-   ```
-
-2. Edit your Cursor configuration file:
-   - **macOS/Linux**: `~/.cursor/mcp.json`
-   - **Windows**: `%USERPROFILE%\.cursor\mcp.json`
-
-3. Add the following configuration:
-
-```json
-{
-  "mcpServers": {
-    "MCP Installer": {
-      "command": "uvx",
-      "type": "stdio",
-      "args": [
-        "cursor-mcp-installer-free"
-      ]
-    }
-  }
-}
-```
-
-4. Restart Cursor
-5. Ask Claude to "Install the web search MCP server"
-
-## Option 3: Global Installation with npm
+## Option 2: Global Installation with npm
 
 1. Install the package globally:
 
@@ -74,7 +43,10 @@ npm install -g cursor-mcp-installer-free
   "mcpServers": {
     "MCP Installer": {
       "command": "cursor-mcp-installer-free",
-      "type": "stdio"
+      "type": "stdio",
+      "args": [
+        "index.mjs"
+      ]
     }
   }
 }

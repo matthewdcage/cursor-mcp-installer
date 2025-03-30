@@ -34,12 +34,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/cursor-ai/mcp-installer.git"
+    "url": "git+https://github.com/matthewdcage/cursor-mcp-installer.git"
   },
   "bugs": {
-    "url": "https://github.com/cursor-ai/mcp-installer/issues"
+    "url": "https://github.com/matthewdcage/cursor-mcp-installer/issues"
   },
-  "homepage": "https://github.com/cursor-ai/mcp-installer#readme",
+  "homepage": "https://github.com/matthewdcage/cursor-mcp-installer#readme",
   "engines": {
     "node": ">=16.0.0"
   },
