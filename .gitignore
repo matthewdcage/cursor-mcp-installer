@@ -55,3 +55,6 @@ Dockerfile
 CONTRIBUTING.md
 # tsconfig.json is commented out as it's needed for building the project
 # tsconfig.json 
+
+# Marketing materials
+marketing/ 
