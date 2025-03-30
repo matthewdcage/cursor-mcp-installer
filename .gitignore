@@ -42,3 +42,7 @@ test-folder/
 *.tgz
 cursor-mcp-installer-*.tgz
 cursor-ai-mcp-installer-*.tgz 
+
+# Smithery files for this fork
+smithery.yaml
+SMITHERY.md 
