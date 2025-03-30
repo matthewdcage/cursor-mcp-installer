@@ -4,6 +4,9 @@ All notable changes to the Cursor MCP Installer will be documented in this file.
 
 ## [0.1.3] - 2024-06-10
 
+### Summary
+This release significantly improves path handling in the MCP Installer, making it more robust when dealing with various file paths, schema files, and server detection. Users will experience fewer issues with file paths containing spaces or special characters, better detection of OpenAPI schema files, and more reliable server discovery in local directories.
+
 ### Added
 - New path handling utilities to improve file path resolution:
   - `normalizeServerPath` - Normalizes and validates file paths
@@ -24,7 +27,7 @@ All notable changes to the Cursor MCP Installer will be documented in this file.
 - Improved error reporting for invalid file paths
 
 ### Thanks
-- Special thanks to [@ItzAmirreza](https://github.com/ItzAmirreza) for submitting the issue regarding path handling problems for intital installation
+- Special thanks to [@ItzAmirreza](https://github.com/ItzAmirreza) for submitting the issue regarding path handling problems for initial installation
 
 ## [0.1.2] - 2024-05-21
 
