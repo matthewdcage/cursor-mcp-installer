@@ -46,3 +46,6 @@ cursor-ai-mcp-installer-*.tgz
 # Smithery files for this fork
 smithery.yaml
 SMITHERY.md 
+
+# Publishing instructions
+PUBLISHING.md 
