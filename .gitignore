@@ -34,3 +34,11 @@ pids
 *.swp
 *.swo
 .DS_Store 
+
+# Test files and directories
+test-folder/
+
+# Backups and archives
+*.tgz
+cursor-mcp-installer-*.tgz
+cursor-ai-mcp-installer-*.tgz 
