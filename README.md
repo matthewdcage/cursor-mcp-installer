@@ -22,6 +22,10 @@
 </pre>
 
   <p>A Model Context Protocol (MCP) server for installing and configuring other MCP servers within Cursor IDE.</p>
+
+  <a href="https://glama.ai/mcp/servers/@matthewdcage/cursor-mcp-installer">
+    <img width="380" height="200" src="https://glama.ai/mcp/servers/@matthewdcage/cursor-mcp-installer/badge" alt="Cursor Installer MCP server" />
+  </a>
   
   [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
   [![npm version](https://img.shields.io/npm/v/cursor-mcp-installer-free.svg)](https://www.npmjs.com/package/cursor-mcp-installer-free)
