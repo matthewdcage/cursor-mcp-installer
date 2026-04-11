@@ -11,38 +11,37 @@
  |  \/  |/ ___|  _ \  |_ _| \ | / ___|_   _|/ \  | |   | |   | ____|  _ \ 
  | |\/| | |   | |_) |  | ||  \| \___ \ | | / _ \ | |   | |   |  _| | |_) |
  | |  | | |___|  __/   | || |\  |___) || |/ ___ \| |___| |___| |___|  _ < 
- |_|  |_|\____|_|     |___|_| \_|____/ |_/_/   \_\_____|_____|_____|_| \_\
+    |_|  |_|\____|_|     |___|_| \_|____/ |_/_/   \_\_____|_____|_____|_| \_\
 ```
 
-<p align="center">
-  <strong>Install and configure MCP servers across all major AI clients with one command.</strong>
 </p>
 
+<div align="center">
+
+  <p>Install and configure MCP servers across all major AI clients with one command.</p>
+
+  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+  [![npm version](https://img.shields.io/npm/v/universal-mcp-installer.svg)](https://www.npmjs.com/package/universal-mcp-installer)
+  [![MCP Compatible](https://img.shields.io/badge/MCP-Compatible-brightgreen.svg)](https://github.com/anthropic-labs/model-context-protocol)
+  [![npm downloads](https://img.shields.io/npm/dt/universal-mcp-installer.svg)](https://www.npmjs.com/package/universal-mcp-installer)
+
+  <a href="https://www.linkedin.com/in/digitalmarketingstrategyexpert/">
+    <img src="https://img.shields.io/badge/LinkedIn-Matthew_Cage-blue?style=flat&logo=linkedin" alt="LinkedIn"/>
+  </a>
+
+</div>
+
+> **🚀 NEW: Universal MCP Installer v1.0.0** — Complete rewrite of `cursor-mcp-installer`. Now supports **6 AI clients** (Claude Desktop, Cursor, VS Code, OpenClaw, Claude Code, ChatGPT), **cross-platform** (macOS, Windows, Linux), real **MCP handshake validation**, and a **branded web dashboard**. Upgraded to MCP SDK 1.29.0.
+
+> **🖥️ Web Dashboard Available!** Launch with `npx universal-mcp-installer --ui` to manage everything from a visual interface. See [Using the Dashboard](#using-the-dashboard) below.
+
 <p align="center">
-  <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
-  <a href="https://www.npmjs.com/package/universal-mcp-installer"><img src="https://img.shields.io/npm/v/universal-mcp-installer.svg" alt="npm version"></a>
-  <a href="https://github.com/anthropic-labs/model-context-protocol"><img src="https://img.shields.io/badge/MCP-Compatible-brightgreen.svg" alt="MCP Compatible"></a>
-  <a href="https://www.npmjs.com/package/universal-mcp-installer"><img src="https://img.shields.io/npm/dt/universal-mcp-installer.svg" alt="npm downloads"></a>
+  <img src="assets/dashboard-screenshot.png" alt="Universal MCP Installer Dashboard" width="800"/>
 </p>
-
----
-
-> **Upgrade from cursor-mcp-installer v0.1.3:** This is a complete rewrite with MCP SDK 1.29.0, support for 6 AI clients (not just Cursor), cross-platform config writing, real MCP handshake validation, and a branded web dashboard.
-
-## Supported Clients
-
-| Client | Config Key | Platforms |
-|--------|-----------|-----------|
-| **Claude Desktop** | `mcpServers` | macOS, Windows, Linux |
-| **Cursor** | `mcpServers` | macOS, Windows, Linux |
-| **VS Code (Copilot)** | `servers` | All (workspace-level) |
-| **OpenClaw / NemoClaw** | `mcp.servers` | macOS, Linux |
-| **Claude Code** | `mcpServers` | macOS, Windows, Linux |
-| **ChatGPT Desktop** | HTTP Bridge | All (via local HTTP proxy) |
 
 ## Quick Start Guide
 
-### Option 1: CLI (Fastest)
+### Step 1: Install an MCP Server (One Command)
 
 ```bash
 npx universal-mcp-installer install @modelcontextprotocol/server-memory
@@ -50,7 +49,7 @@ npx universal-mcp-installer install @modelcontextprotocol/server-memory
 
 That's it. The installer detects which AI clients you have installed and writes the correct config for each one.
 
-### Option 2: As an MCP Tool (Let Your AI Install Other MCP Servers)
+### Step 2: Or Add as an MCP Tool (Let Your AI Install Other MCP Servers)
 
 Add this to your AI client's MCP configuration:
 
@@ -95,33 +94,62 @@ Add this to your AI client's MCP configuration:
 }
 ```
 
-Then restart your AI client and ask it:
+### Step 3: Restart Your AI Client
+
+Close and reopen your AI client to apply the configuration changes.
+
+### Step 4: Ask Your AI to Install Servers
 
 ```
 Install the filesystem MCP server
 ```
 
-### Option 3: Web Dashboard
+or
+
+```
+Install the web search MCP server
+```
+
+The installer exposes three tools your AI can call:
+
+| Tool | Description |
+|------|-------------|
+| `detect_system` | Returns OS, architecture, available runtimes, and detected AI clients |
+| `install_mcp_server` | Installs a server by package name, git URL, or local path to selected clients |
+| `validate_mcp_server` | Validates a server via MCP handshake and returns the result |
+
+## Using the Dashboard
+
+Launch the visual interface:
 
 ```bash
 npx universal-mcp-installer --ui
 ```
 
-Opens a branded web dashboard at `http://localhost:3939`:
+This opens a branded web dashboard at `http://localhost:3939`:
 
 <p align="center">
-  <img src="assets/dashboard-screenshot.png" alt="Universal MCP Installer Dashboard" width="800">
+  <img src="assets/dashboard-screenshot.png" alt="Universal MCP Installer Dashboard" width="800"/>
 </p>
 
-#### Using the Dashboard
+**1. System Panel** — The top section automatically detects your OS and all available runtimes (Node, npm, uvx, Python, git) so you can see at a glance what's available on your machine.
 
-**1. System Panel** — The top section automatically detects your OS and all available runtimes. In the screenshot you can see it detected macOS 25.3.0 (Apple Silicon) with Node v20.19.1, npm v10.8.2, uvx 0.7.15, Python 3.12.4, and git 2.50.1.
+**2. AI Clients** — Each detected client gets a card showing its name, config file path, and how many MCP servers are already configured. Use the toggle switch on each card to include or exclude it from the next installation. Uninstalled clients appear dimmed.
 
-**2. AI Clients** — Each detected client gets a card showing its name, config file path, and how many servers are already configured (e.g., Claude Desktop shows "19 servers configured"). Toggle the switch on each card to include or exclude it from the next installation. Clients that aren't installed appear dimmed.
+**3. Install** — Type a package name (npm package, git URL, or local path), pick a method from the dropdown (`Auto` / `npm` / `uvx` / `git` / `local`), and hit the green **Install** button. The installer resolves the package, writes config to every toggled client, and validates via MCP handshake.
 
-**3. Install** — Type a package name (npm package, git URL, or local path), pick a method from the dropdown (`Auto` / `npm` / `uvx` / `git` / `local`), and hit the green **Install** button. The installer resolves the package, writes config to every toggled client, runs an MCP handshake validation, and streams progress in real time via WebSocket.
+**4. Progress & Results** — A real-time timeline shows each step (resolving, writing config, validating) with live status updates via WebSocket. Once complete, a health report grid shows pass/fail per client with tool counts, latency, and recovery hints for any failures.
 
-**4. Progress & Results** — After clicking Install, a timeline appears below showing each step (resolving, writing config, validating) with live status dots. Once complete, a health report grid shows pass/fail per client with tool counts, latency, and recovery hints for any failures.
+## Supported Clients
+
+| Client | Config Key | Platforms |
+|--------|-----------|-----------|
+| **Claude Desktop** | `mcpServers` | macOS, Windows, Linux |
+| **Cursor** | `mcpServers` | macOS, Windows, Linux |
+| **VS Code (Copilot)** | `servers` | All (workspace-level) |
+| **OpenClaw / NemoClaw** | `mcp.servers` | macOS, Linux |
+| **Claude Code** | `mcpServers` | macOS, Windows, Linux |
+| **ChatGPT Desktop** | HTTP Bridge | All (via local HTTP proxy) |
 
 ### Where Are the Config Files?
 
@@ -193,16 +221,6 @@ npx universal-mcp-installer --ui
 | `--args <arg>` | Server argument (repeatable) |
 | `--no-validate` | Skip MCP handshake validation after install |
 | `--port <number>` | Dashboard port (default: 3939) |
-
-## MCP Server Tools
-
-When used as an MCP server (stdio mode), the installer exposes three tools:
-
-| Tool | Description |
-|------|-------------|
-| `detect_system` | Returns OS, architecture, available runtimes, and detected AI clients |
-| `install_mcp_server` | Installs a server by package name, git URL, or local path to selected clients |
-| `validate_mcp_server` | Validates a server via MCP handshake and returns the result |
 
 ## API Endpoints (Dashboard Mode)
 
