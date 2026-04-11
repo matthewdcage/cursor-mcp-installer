@@ -1,0 +1,58 @@
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# Compiled output
+lib/
+dist/
+build/
+*.tsbuildinfo
+
+# Dashboard build output
+dashboard/dist/
+dashboard/node_modules/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Editor directories and files
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Test artifacts
+test-folder/
+coverage/
+
+# Backups and archives
+*.tgz
+*.bak
+
+# Publishing instructions
+PUBLISHING.md
+
+# Marketing materials
+marketing/
+
+# Smithery
+smithery.yaml
+SMITHERY.md

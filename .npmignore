@@ -1,0 +1,24 @@
+# Source (compiled output is in lib/)
+src/
+dashboard/
+tests/
+
+# Config
+tsconfig.json
+vitest.config.ts
+.gitignore
+.prettierrc
+
+# Dev artifacts
+node_modules/
+coverage/
+*.tsbuildinfo
+*.tgz
+
+# Editor
+.idea/
+.vscode/
+.DS_Store
+
+# CI/CD
+.github/

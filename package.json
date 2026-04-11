@@ -1,0 +1,60 @@
+{
+  "name": "universal-mcp-installer",
+  "version": "1.0.0",
+  "description": "Universal MCP server installer for Claude Desktop, VS Code, Cursor, OpenClaw, NemoClaw, and ChatGPT across macOS, Linux, and Windows",
+  "type": "module",
+  "main": "lib/index.js",
+  "bin": {
+    "universal-mcp-installer": "./lib/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "build:dashboard": "cd dashboard && npm run build",
+    "build:all": "npm run build && npm run build:dashboard",
+    "dev": "tsc --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:integration": "vitest run --config vitest.integration.config.ts",
+    "lint": "tsc --noEmit",
+    "prepublishOnly": "npm run build:all"
+  },
+  "author": "Matthew Cage",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.12.0",
+    "typescript": "^5.6.3",
+    "vitest": "^3.0.0"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "installer",
+    "claude",
+    "cursor",
+    "vscode",
+    "openclaw",
+    "chatgpt"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/matthewdcage/cursor-mcp-installer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/matthewdcage/cursor-mcp-installer/issues"
+  },
+  "homepage": "https://github.com/matthewdcage/cursor-mcp-installer#readme",
+  "files": [
+    "lib/**/*",
+    "docs/**/*"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}

@@ -1,0 +1,92 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-primary: #000000;
+  --text-primary: #ffffff;
+  --text-muted: rgba(255, 255, 255, 0.5);
+  --text-subtle: rgba(255, 255, 255, 0.25);
+  --accent-green: #00ff77;
+  --accent-yellow: #EEFF00;
+  --accent-red: rgb(255, 0, 59);
+  --card-bg: rgba(255, 255, 255, 0.05);
+  --card-border: rgba(255, 255, 255, 0.1);
+  --card-hover-bg: rgba(255, 255, 255, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: 'DM Sans', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-card border border-card-border rounded-card backdrop-blur-sm;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+  }
+
+  .glass-card:hover {
+    background-color: var(--card-hover-bg);
+    transform: translateY(-2px);
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center gap-2 px-5 py-2.5 border border-subtle rounded-full font-mono text-sm;
+    @apply text-foreground bg-transparent transition-all duration-200;
+  }
+
+  .btn-outline:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-mono text-sm;
+    @apply bg-accent-green text-background font-medium transition-all duration-200;
+  }
+
+  .btn-primary:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+  }
+
+  .form-input {
+    @apply w-full h-14 px-4 rounded-lg font-sans text-base text-foreground;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--card-border);
+    outline: none;
+    transition: border-color 0.2s ease;
+  }
+
+  .form-input:focus {
+    border-color: var(--accent-green);
+  }
+
+  .form-input::placeholder {
+    color: var(--text-subtle);
+  }
+
+  .nav-blur {
+    backdrop-filter: blur(8px);
+    background: rgba(0, 0, 0, 0.5);
+  }
+}
+
+.grain-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 50;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+}
