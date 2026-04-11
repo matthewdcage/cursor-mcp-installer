@@ -52,6 +52,7 @@
   "homepage": "https://github.com/matthewdcage/cursor-mcp-installer#readme",
   "files": [
     "lib/**/*",
+    "dashboard/dist/**/*",
     "docs/**/*"
   ],
   "publishConfig": {
