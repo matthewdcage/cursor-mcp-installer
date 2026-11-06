@@ -8,7 +8,7 @@ const execFileAsync = promisify(execFile);
 
 export async function isNpmPackage(name: string): Promise<boolean> {
   try {
-    await execFileAsync('npm', ['view', name, 'version'], { timeout: 15000 });
+    await execFileAsync('npm', ['view', name, 'version'], { timeout: 15000, shell: true });
     return true;
   } catch {
     return false;

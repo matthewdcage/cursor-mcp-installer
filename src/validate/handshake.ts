@@ -32,6 +32,7 @@ export async function validateMcpServer(
       stdio: ['pipe', 'pipe', 'pipe'],
       env: { ...process.env, ...env },
       timeout: HANDSHAKE_TIMEOUT + 2000,
+      shell: true,
     });
 
     let stdout = '';
